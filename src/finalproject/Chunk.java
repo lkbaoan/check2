@@ -49,21 +49,21 @@ public class Chunk {
         vboColorHandle = glGenBuffers();
         vboVertexHandle = glGenBuffers();
         vboTextureHandle = glGenBuffers();
-        noise = new SimplexNoise(500, 0.4f, 5);
+        noise = new SimplexNoise(100, 0.5, r.nextInt(10000));
 
         FloatBuffer vertexPositionData = BufferUtils.createFloatBuffer((CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE) * 6 * 12);
         FloatBuffer vertexColorData = BufferUtils.createFloatBuffer((CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE) * 6 * 12);
         FloatBuffer vertexTextureData = BufferUtils.createFloatBuffer((CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE) * 6 * 12);
 
-//        int i = (int)(startX+x*((30-startX)/xResolution));
-//        int j = (int)(startY+y*((30-startY)/xResolution));
-//        int k = (int)(startZ+z*((30-startZ)/xResolution));
-//        
-//        float height = (startY + (int)(100*noise.getNoise(30, 30, 30))*CUBE_LENGTH);
         for (float x = 0; x < CHUNK_SIZE; x++) {
             for (float z = 0; z < CHUNK_SIZE; z++) {
-                for (float y = 0; y < CHUNK_SIZE; y++) {
-                    vertexPositionData.put(createCube((float) (startX + x * CUBE_LENGTH), (float) (y * CUBE_LENGTH + (int) (CHUNK_SIZE * .8)), (float) (startZ + z * CUBE_LENGTH)));
+                int adjustedX = (int) (startX + x);
+                int adjustedZ = (int) (startZ + z);
+                double noiseValue = noise.getNoise(adjustedX, adjustedZ);
+                int height = (int) (noiseValue * 10 + 10);
+                for (float y = 0; y < height; y++) {
+                    float baseHeight = (float) (y * CUBE_LENGTH + (int) (CHUNK_SIZE * .8));
+                    vertexPositionData.put(createCube((float) (startX + x * CUBE_LENGTH), baseHeight, (float) (startZ + z * CUBE_LENGTH)));
                     vertexColorData.put(createCubeVertexCol(getCubeColor(blocks[(int) x][(int) y][(int) z])));
                     vertexTextureData.put(createTexCube((float) 0, (float) 0, blocks[(int) x][(int) y][(int) z]));
                 }
