@@ -3,10 +3,10 @@
  * author: Thien Long Dinh (id:015792764), Thien Luat Dinh (id:015792777), An Le (id: 014128231)
  * class: CS 4450 - Computer Graphics
  *
- * assignment: final program - checkpoint 1
- * date last modified: 02/22/2024
+ * assignment: final program - checkpoint 2
+ * date last modified: 04/22/2024
  *
- * purpose: This file hold block information.
+ * purpose: This file hold chunk information and its render.
  ***************************************************************** */
 package finalproject;
 
@@ -32,6 +32,8 @@ public class Chunk {
     private Texture texture;
     private SimplexNoise noise;
 
+    // method: render
+    // purpose: render blocks in chunk
     public void render() {
         glPushMatrix();
         glBindBuffer(GL_ARRAY_BUFFER, vboVertexHandle);
@@ -45,11 +47,13 @@ public class Chunk {
         glPopMatrix();
     }
 
+    // method: rebuildMesh
+    // purpose: build block formation that randomly generated each time the program is ran.
     public void rebuildMesh(float startX, float startY, float startZ) {
         vboColorHandle = glGenBuffers();
         vboVertexHandle = glGenBuffers();
         vboTextureHandle = glGenBuffers();
-        noise = new SimplexNoise(100, 0.5, r.nextInt(10000));
+        noise = new SimplexNoise(50, 0.5, r.nextInt(10000));
 
         FloatBuffer vertexPositionData = BufferUtils.createFloatBuffer((CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE) * 6 * 12);
         FloatBuffer vertexColorData = BufferUtils.createFloatBuffer((CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE) * 6 * 12);
@@ -83,6 +87,8 @@ public class Chunk {
         glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
 
+    // method: createCubeVertexCol
+    // purpose: return cube colors
     private float[] createCubeVertexCol(float[] cubeColorArray) {
         float[] cubeColors = new float[cubeColorArray.length * 4 * 6];
         for (int i = 0; i < cubeColors.length; i++) {
@@ -91,6 +97,8 @@ public class Chunk {
         return cubeColors;
     }
 
+    // method: createTexCube
+    // purpose: return cube texture 
     private static float[] createTexCube(float x, float y, Block block) {
         float offset = (1024f / 16) / 1024f;
         switch (block.getId()) {
@@ -290,6 +298,8 @@ public class Chunk {
         return new float[]{1, 1, 1};
     }
 
+    // method: createCube
+    // purpose: create a cube at coordinate
     public static float[] createCube(float x, float y, float z) {
         int offset = CUBE_LENGTH / 2;
         return new float[]{
@@ -325,15 +335,18 @@ public class Chunk {
             x + offset, y - offset, z};
     }
 
+    // method: getCubeColor
+    // purpose: reuturn cube color 1,1,1
     public float[] getCubeColor(Block block) {
         return new float[]{1, 1, 1};
     }
 
+    // Constructor
     public Chunk(int startX, int startY, int startZ) {
-
+        // try to load texture
         try {
             texture = TextureLoader.getTexture("PNG",
-                    ResourceLoader.getResourceAsStream("E:\\Study\\CS4450_Computer_Graphics\\check1\\src\\finalproject\\terrain.png"));
+                    ResourceLoader.getResourceAsStream(".\\src\\finalproject\\terrain.png")); // relative path
         } catch (Exception e) {
             System.out.print("Cannot load texture!");
         }

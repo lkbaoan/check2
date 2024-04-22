@@ -1,3 +1,13 @@
+/** ****************************************************************
+ * file: Programming.java
+ * author: Thien Long Dinh (id:015792764), Thien Luat Dinh (id:015792777), An Le (id: 014128231)
+ * class: CS 4450 - Computer Graphics
+ *
+ * assignment: final program - checkpoint 2
+ * date last modified: None
+ *
+ * purpose: Professor provided file for noise generation.
+ ***************************************************************** */
 package finalproject;
 
 import java.util.Random;

@@ -4,7 +4,7 @@
  * class: CS 4450 - Computer Graphics
  *
  * assignment: final program - checkpoint 1
- * date last modified: 03/25/2024
+ * date last modified: 04/22/2024
  *
  * purpose: This file handle camera movement and render of the cube
  ***************************************************************** */
