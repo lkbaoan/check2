@@ -53,26 +53,48 @@ public class Chunk {
         vboColorHandle = glGenBuffers();
         vboVertexHandle = glGenBuffers();
         vboTextureHandle = glGenBuffers();
-        noise = new SimplexNoise(50, 0.5, r.nextInt(10000));
+        Random rand = new Random();
+        noise = new SimplexNoise(100, 0.5, rand.nextInt(10000));
 
-        FloatBuffer vertexPositionData = BufferUtils.createFloatBuffer((CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE) * 6 * 12);
-        FloatBuffer vertexColorData = BufferUtils.createFloatBuffer((CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE) * 6 * 12);
-        FloatBuffer vertexTextureData = BufferUtils.createFloatBuffer((CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE) * 6 * 12);
+        FloatBuffer vertexPositionData = BufferUtils.createFloatBuffer(CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE * 6 * 12);
+        FloatBuffer vertexColorData = BufferUtils.createFloatBuffer(CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE * 6 * 12);
+        FloatBuffer vertexTextureData = BufferUtils.createFloatBuffer(CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE * 6 * 12);
 
-        for (float x = 0; x < CHUNK_SIZE; x++) {
-            for (float z = 0; z < CHUNK_SIZE; z++) {
-                int adjustedX = (int) (startX + x);
-                int adjustedZ = (int) (startZ + z);
+        for (int x = 0; x < CHUNK_SIZE; x++) {
+            for (int z = 0; z < CHUNK_SIZE; z++) {
+                int adjustedX = (int) startX + x;
+                int adjustedZ = (int) startZ + z;
+
                 double noiseValue = noise.getNoise(adjustedX, adjustedZ);
                 int height = (int) (noiseValue * 10 + 10);
-                for (float y = 0; y < height; y++) {
-                    float baseHeight = (float) (y * CUBE_LENGTH + (int) (CHUNK_SIZE * .8));
+
+                for (int y = 0; y < height; y++) {
+                    Block.BlockType blockType;
+                    if (y == height - 1) {
+                        float topBlockType = rand.nextFloat();
+                        if (topBlockType < 0.33) {
+                            blockType = Block.BlockType.BlockType_Grass;
+                        } else if (topBlockType < 0.66) {
+                            blockType = Block.BlockType.BlockType_Sand;
+                        } else {
+                            blockType = Block.BlockType.BlockType_Water;
+                        }
+                    } else if (y == 0) {
+                        blockType = Block.BlockType.BlockType_Bedrock;
+                    } else {
+                        blockType = rand.nextFloat() > 0.5 ? Block.BlockType.BlockType_Dirt : Block.BlockType.BlockType_Stone;
+                    }
+
+                    blocks[x][y][z] = new Block(blockType);
+
+                    float baseHeight = (float) (y * CUBE_LENGTH + (int) (CHUNK_SIZE * 0.8));
                     vertexPositionData.put(createCube((float) (startX + x * CUBE_LENGTH), baseHeight, (float) (startZ + z * CUBE_LENGTH)));
-                    vertexColorData.put(createCubeVertexCol(getCubeColor(blocks[(int) x][(int) y][(int) z])));
-                    vertexTextureData.put(createTexCube((float) 0, (float) 0, blocks[(int) x][(int) y][(int) z]));
+                    vertexColorData.put(createCubeVertexCol(getCubeColor(blocks[x][y][z])));
+                    vertexTextureData.put(createTexCube(0, 0, blocks[x][y][z]));
                 }
             }
         }
+
         vertexColorData.flip();
         vertexPositionData.flip();
         vertexTextureData.flip();

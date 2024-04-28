@@ -10,6 +10,8 @@
  ***************************************************************** */
 package finalproject;
 
+import java.nio.FloatBuffer;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import static org.lwjgl.opengl.GL11.*;
@@ -69,9 +71,23 @@ public class Programming {
         glEnableClientState(GL_VERTEX_ARRAY);
         glEnableClientState(GL_COLOR_ARRAY);
         glEnable(GL_DEPTH_TEST);
-
         glEnable(GL_TEXTURE_2D);
         glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+        glEnable(GL_LIGHTING);
+        glEnable(GL_LIGHT0);
+
+        FloatBuffer lightPosition = BufferUtils.createFloatBuffer(4);
+        lightPosition.put(1.0f).put(1.0f).put(1.0f).put(0.0f).flip();
+        glLight(GL_LIGHT0, GL_POSITION, lightPosition);
+
+        FloatBuffer lightAmbient = BufferUtils.createFloatBuffer(4);
+        lightAmbient.put(0.2f).put(0.2f).put(0.2f).put(1.0f).flip();
+        glLight(GL_LIGHT0, GL_AMBIENT, lightAmbient);
+
+        FloatBuffer lightDiffuse = BufferUtils.createFloatBuffer(4);
+        lightDiffuse.put(1.0f).put(1.0f).put(1.0f).put(1.0f).flip();
+        glLight(GL_LIGHT0, GL_DIFFUSE, lightDiffuse);
     }
 
 }
