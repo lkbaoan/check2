@@ -4,7 +4,7 @@
  * class: CS 4450 - Computer Graphics
  *
  * assignment: final program - checkpoint 1
- * date last modified: 03/25/2024
+ * date last modified: 04/29/2024
  *
  * purpose: This file start the program and launch camera controller
  ***************************************************************** */
@@ -21,6 +21,8 @@ public class Programming {
 
     private FPCameraController camera;
     private DisplayMode displayMode;
+    private FloatBuffer lightPosition;
+    private FloatBuffer whiteLight;
 
     // method: main
     // purpose: start the program
@@ -35,7 +37,7 @@ public class Programming {
         try {
             createWindow();
             initGL();
-            camera = new FPCameraController(0, 0, 0);
+            camera = new FPCameraController(0, 50, -40);
             camera.gameLoop();
         } catch (Exception e) {
             e.printStackTrace();
@@ -74,20 +76,37 @@ public class Programming {
         glEnable(GL_TEXTURE_2D);
         glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
+        glMatrixMode(GL_ONE);
+        initLightArrays();
+        glEnable(GL_LIGHTING);//enables our lighting
+        glEnable(GL_LIGHT0);//enables light0
+        glLight(GL_LIGHT0, GL_POSITION, lightPosition); //sets our light’s position
+        glLight(GL_LIGHT0, GL_SPECULAR, whiteLight);//sets our specular light
+        glLight(GL_LIGHT0, GL_DIFFUSE, whiteLight);//sets our diffuse light
+        glLight(GL_LIGHT0, GL_AMBIENT, whiteLight);//sets our ambient light
         glEnable(GL_LIGHTING);
         glEnable(GL_LIGHT0);
+//
+//        FloatBuffer lightPosition = BufferUtils.createFloatBuffer(4);
+//        lightPosition.put(1.0f).put(1.0f).put(1.0f).put(0.0f).flip();
+//        glLight(GL_LIGHT0, GL_POSITION, lightPosition);
+//
+//        FloatBuffer lightAmbient = BufferUtils.createFloatBuffer(4);
+//        lightAmbient.put(0.2f).put(0.2f).put(0.2f).put(1.0f).flip();
+//        glLight(GL_LIGHT0, GL_AMBIENT, lightAmbient);
+//
+//        FloatBuffer lightDiffuse = BufferUtils.createFloatBuffer(4);
+//        lightDiffuse.put(1.0f).put(1.0f).put(1.0f).put(1.0f).flip();
+//        glLight(GL_LIGHT0, GL_DIFFUSE, lightDiffuse);
+    }
 
-        FloatBuffer lightPosition = BufferUtils.createFloatBuffer(4);
-        lightPosition.put(1.0f).put(1.0f).put(1.0f).put(0.0f).flip();
-        glLight(GL_LIGHT0, GL_POSITION, lightPosition);
-
-        FloatBuffer lightAmbient = BufferUtils.createFloatBuffer(4);
-        lightAmbient.put(0.2f).put(0.2f).put(0.2f).put(1.0f).flip();
-        glLight(GL_LIGHT0, GL_AMBIENT, lightAmbient);
-
-        FloatBuffer lightDiffuse = BufferUtils.createFloatBuffer(4);
-        lightDiffuse.put(1.0f).put(1.0f).put(1.0f).put(1.0f).flip();
-        glLight(GL_LIGHT0, GL_DIFFUSE, lightDiffuse);
+    // method: initLightArrays
+    // purpose: initalize light arrays
+    private void initLightArrays() {
+        lightPosition = BufferUtils.createFloatBuffer(4);
+        lightPosition.put(0.0f).put(0.0f).put(0.0f).put(1.0f).flip();
+        whiteLight = BufferUtils.createFloatBuffer(4);
+        whiteLight.put(1.0f).put(1.0f).put(1.0f).put(0.0f).flip();
     }
 
 }
