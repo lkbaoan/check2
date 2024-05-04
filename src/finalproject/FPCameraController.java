@@ -115,7 +115,9 @@ public class FPCameraController {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             chunk.render();
-
+            if (Keyboard.isKeyDown(Keyboard.KEY_F1)) {
+                chunk.changeTexture();
+            }
             Display.update();
             Display.sync(60);
         }
