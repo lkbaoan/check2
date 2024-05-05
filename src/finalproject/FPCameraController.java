@@ -27,6 +27,9 @@ public class FPCameraController {
     private float pitch;
     private Chunk chunk;
 
+    private float playerHeight = 0.1f; // Approximate height of the player
+    private float playerWidth = 0.1f; // Width of the player
+
     // method: FPCameraController
     // purpose: Constructor for FPCameraController
     public FPCameraController(float x, float y, float z) {
@@ -54,61 +57,106 @@ public class FPCameraController {
         }
     }
 
+    private boolean canMoveTo(Vector3f newPos) {
+        AABB playerBox = getPlayerAABB(newPos);
+        return !chunk.checkCollision(playerBox);
+    }
+
+    private AABB getPlayerAABB(Vector3f newPos) {
+        Vector3f min = new Vector3f(newPos.x - playerWidth / 2, newPos.y, newPos.z - playerWidth / 2);
+        Vector3f max = new Vector3f(newPos.x + playerWidth / 2, newPos.y + playerHeight, newPos.z + playerWidth / 2);
+        return new AABB(min, max);
+    }
+
+    private void move(Vector3f direction, float distance) {
+        Vector3f newPos = new Vector3f(position);
+        newPos.x += direction.x * distance;
+        newPos.y += direction.y * distance;
+        newPos.z += direction.z * distance;
+
+        if (canMoveTo(newPos)) {
+            position.set(newPos);
+        }
+    }
+
+    private void walkForward(float distance) {
+        move(new Vector3f((float) Math.sin(Math.toRadians(yaw)), 0, -(float) Math.cos(Math.toRadians(yaw))), distance);
+    }
+
+    private void walkBackwards(float distance) {
+        move(new Vector3f(-(float) Math.sin(Math.toRadians(yaw)), 0, (float) Math.cos(Math.toRadians(yaw))), distance);
+    }
+
+    private void strafeLeft(float distance) {
+        move(new Vector3f((float) Math.sin(Math.toRadians(yaw - 90)), 0, -(float) Math.cos(Math.toRadians(yaw - 90))), distance);
+    }
+
+    private void strafeRight(float distance) {
+        move(new Vector3f((float) Math.sin(Math.toRadians(yaw + 90)), 0, -(float) Math.cos(Math.toRadians(yaw + 90))), distance);
+    }
+
+    private void moveUp(float distance) {
+        move(new Vector3f(0, 1, 0), distance);
+    }
+
+    private void moveDown(float distance) {
+        move(new Vector3f(0, -1, 0), distance);
+    }
+
     // method: walkForward
     // purpose: move camera forward
-    private void walkForward(float distance) {
-        float deltaX = distance * (float) Math.sin(Math.toRadians(yaw));
-        float deltaZ = distance * (float) Math.cos(Math.toRadians(yaw));
-        position.x += deltaX;
-        position.z -= deltaZ;
-    }
-
-    // method: walkBackward
-    // purpose: move camera backward
-    private void walkBackwards(float distance) {
-        float deltaX = distance * (float) Math.sin(Math.toRadians(yaw));
-        float deltaZ = distance * (float) Math.cos(Math.toRadians(yaw));
-        position.x -= deltaX;
-        position.z += deltaZ;
-    }
-
-    // method: strafeLeft
-    // purpose: move camera to the left
-    private void strafeLeft(float distance) {
-        float deltaX = distance * (float) Math.sin(Math.toRadians(yaw - 90));
-        float deltaZ = distance * (float) Math.cos(Math.toRadians(yaw - 90));
-        position.x += deltaX;
-        position.z -= deltaZ;
-
-    }
-
-    // method: strafeRight
-    // purpose: move camera to the right
-    private void strafeRight(float distance) {
-        float deltaX = distance * (float) Math.sin(Math.toRadians(yaw + 90));
-        float deltaZ = distance * (float) Math.cos(Math.toRadians(yaw + 90));
-        position.x += deltaX;
-        position.z -= deltaZ;
-
-    }
-
-    // method: moveUp
-    // purpose: move camera upward
-    private void moveUp(float distance) {
-        position.y += distance;
-    }
-
-    // method: moveDown
-    // purpose: move camera downward
-    private void moveDown(float distance) {
-        position.y -= distance;
-    }
-
+//    private void walkForward(float distance) {
+//        float deltaX = distance * (float) Math.sin(Math.toRadians(yaw));
+//        float deltaZ = distance * (float) Math.cos(Math.toRadians(yaw));
+//        position.x += deltaX;
+//        position.z -= deltaZ;
+//    }
+//
+//    // method: walkBackward
+//    // purpose: move camera backward
+//    private void walkBackwards(float distance) {
+//        float deltaX = distance * (float) Math.sin(Math.toRadians(yaw));
+//        float deltaZ = distance * (float) Math.cos(Math.toRadians(yaw));
+//        position.x -= deltaX;
+//        position.z += deltaZ;
+//    }
+//
+//    // method: strafeLeft
+//    // purpose: move camera to the left
+//    private void strafeLeft(float distance) {
+//        float deltaX = distance * (float) Math.sin(Math.toRadians(yaw - 90));
+//        float deltaZ = distance * (float) Math.cos(Math.toRadians(yaw - 90));
+//        position.x += deltaX;
+//        position.z -= deltaZ;
+//
+//    }
+//
+//    // method: strafeRight
+//    // purpose: move camera to the right
+//    private void strafeRight(float distance) {
+//        float deltaX = distance * (float) Math.sin(Math.toRadians(yaw + 90));
+//        float deltaZ = distance * (float) Math.cos(Math.toRadians(yaw + 90));
+//        position.x += deltaX;
+//        position.z -= deltaZ;
+//
+//    }
+//
+//    // method: moveUp
+//    // purpose: move camera upward
+//    private void moveUp(float distance) {
+//        position.y += distance;
+//    }
+//
+//    // method: moveDown
+//    // purpose: move camera downward
+//    private void moveDown(float distance) {
+//        position.y -= distance;
+//    }
     // method: gameLoop
     // purpose: loop to receive command to render graphics or exit
     public void gameLoop() {
         while (!Display.isCloseRequested() && !Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
-            Keyboard.poll();
+//            Keyboard.poll();
             processInput();
             lookThrough();
 

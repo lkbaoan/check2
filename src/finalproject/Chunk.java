@@ -15,12 +15,13 @@ import java.util.Random;
 import org.lwjgl.BufferUtils;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
+import org.lwjgl.util.vector.Vector3f;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 import org.newdawn.slick.util.ResourceLoader;
 
 public class Chunk {
-
+    
     static final int CHUNK_SIZE = 30;
     static final int CUBE_LENGTH = 2;
     private Block[][][] blocks;
@@ -58,20 +59,20 @@ public class Chunk {
         vboTextureHandle = glGenBuffers();
         Random rand = new Random();
         noise = new SimplexNoise(100, 0.5, rand.nextInt(10000));
-
+        
         FloatBuffer vertexPositionData = BufferUtils.createFloatBuffer(CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE * 6 * 12);
         FloatBuffer vertexColorData = BufferUtils.createFloatBuffer(CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE * 6 * 12);
         FloatBuffer vertexTextureData = BufferUtils.createFloatBuffer(CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE * 6 * 12);
-
+        
         for (int x = 0; x < CHUNK_SIZE; x++) {
             for (int z = 0; z < CHUNK_SIZE; z++) {
                 int adjustedX = (int) startX + x;
                 int adjustedZ = (int) startZ + z;
-
+                
                 double noiseValue = noise.getNoise(adjustedX, adjustedZ);
                 noiseHolder[x][z] = noiseValue;
                 int height = (int) (noiseValue * 10 + 10);
-
+                
                 for (int y = 0; y < height; y++) {
                     Block.BlockType blockType;
                     if (y == height - 1) {
@@ -90,7 +91,7 @@ public class Chunk {
                     }
                     blockTypeHolder[x][y][z] = blockType;
                     blocks[x][y][z] = new Block(blockType);
-
+//                    blocks[x][y][z].setActive(true);
                     float baseHeight = (float) (y * CUBE_LENGTH + (int) (CHUNK_SIZE * 0.8));
                     vertexPositionData.put(createCube((float) (startX + x * CUBE_LENGTH), baseHeight, (float) (startZ + z * CUBE_LENGTH)));
                     vertexColorData.put(createCubeVertexCol(getCubeColor(blocks[x][y][z])));
@@ -98,7 +99,7 @@ public class Chunk {
                 }
             }
         }
-
+        
         vertexColorData.flip();
         vertexPositionData.flip();
         vertexTextureData.flip();
@@ -120,7 +121,7 @@ public class Chunk {
         for (int x = 0; x < CHUNK_SIZE; x++) {
             for (int z = 0; z < CHUNK_SIZE; z++) {
                 int height = (int) (noiseHolder[x][z] * 10 + 10);
-
+                
                 for (int y = 0; y < height; y++) {
                     blocks[x][y][z] = new Block(blockTypeHolder[x][y][z]);
                     vertexTextureData.put(createTexCube(0, 0, blocks[x][y][z], changeTexture));
@@ -431,29 +432,55 @@ public class Chunk {
         } catch (Exception e) {
             System.out.print("Cannot load texture!");
         }
-
+        
         r = new Random();
         blocks = new Block[CHUNK_SIZE][CHUNK_SIZE][CHUNK_SIZE];
+//        for (int x = 0; x < CHUNK_SIZE; x++) {
+//            for (int y = 0; y < CHUNK_SIZE; y++) {
+//                for (int z = 0; z < CHUNK_SIZE; z++) {
+//                    if (r.nextFloat() > 0.83f) {
+//                        blocks[x][y][z] = new Block(Block.BlockType.BlockType_Grass);
+//                    } else if (r.nextFloat() > 0.67f) {
+//                        blocks[x][y][z] = new Block(Block.BlockType.BlockType_Sand);
+//                    } else if (r.nextFloat() > 0.50f) {
+//                        blocks[x][y][z] = new Block(Block.BlockType.BlockType_Water);
+//                    } else if (r.nextFloat() > 0.33f) {
+//                        blocks[x][y][z] = new Block(Block.BlockType.BlockType_Dirt);
+//                    } else if (r.nextFloat() > 0.17f) {
+//                        blocks[x][y][z] = new Block(Block.BlockType.BlockType_Stone);
+//                    } else {
+//                        blocks[x][y][z] = new Block(Block.BlockType.BlockType_Bedrock);
+//                    }
+//                }
+//            }
+//        }
         for (int x = 0; x < CHUNK_SIZE; x++) {
             for (int y = 0; y < CHUNK_SIZE; y++) {
                 for (int z = 0; z < CHUNK_SIZE; z++) {
                     if (r.nextFloat() > 0.83f) {
                         blocks[x][y][z] = new Block(Block.BlockType.BlockType_Grass);
+//                        blocks[x][y][z].setActive(true);
                     } else if (r.nextFloat() > 0.67f) {
                         blocks[x][y][z] = new Block(Block.BlockType.BlockType_Sand);
+//                        blocks[x][y][z].setActive(true);
                     } else if (r.nextFloat() > 0.50f) {
                         blocks[x][y][z] = new Block(Block.BlockType.BlockType_Water);
+//                        blocks[x][y][z].setActive(true);
                     } else if (r.nextFloat() > 0.33f) {
                         blocks[x][y][z] = new Block(Block.BlockType.BlockType_Dirt);
+//                        blocks[x][y][z].setActive(true);
                     } else if (r.nextFloat() > 0.17f) {
                         blocks[x][y][z] = new Block(Block.BlockType.BlockType_Stone);
+//                        blocks[x][y][z].setActive(true);
                     } else {
                         blocks[x][y][z] = new Block(Block.BlockType.BlockType_Bedrock);
+//                        blocks[x][y][z].setActive(true);
                     }
+//                    blocks[x][y][z].setActive(true);
                 }
             }
         }
-
+        
         vboColorHandle = glGenBuffers();
         vboVertexHandle = glGenBuffers();
         vboTextureHandle = glGenBuffers();
@@ -464,7 +491,7 @@ public class Chunk {
         noiseHolder = new double[CHUNK_SIZE][CHUNK_SIZE];
         blockTypeHolder = new Block.BlockType[CHUNK_SIZE][CHUNK_SIZE][CHUNK_SIZE];
         rebuildMesh(startX, startY, startZ);
-
+        
     }
 
     // method: changeTexture
@@ -472,5 +499,28 @@ public class Chunk {
     public void changeTexture() {
         changeTexture = !changeTexture;
         rebuildTexture();
+    }
+    
+    public boolean checkCollision(AABB playerBox) {
+        for (int x = 0; x < CHUNK_SIZE; x++) {
+            for (int y = 0; y < CHUNK_SIZE; y++) {
+                for (int z = 0; z < CHUNK_SIZE; z++) {
+                    Block block = blocks[x][y][z];
+                    if (block != null && block.isActive()) {
+                        float blockX = startX + x * CUBE_LENGTH;
+                        float blockY = startY + y * CUBE_LENGTH;
+                        float blockZ = startZ + z * CUBE_LENGTH;
+                        AABB blockBox = new AABB(
+                                new Vector3f(blockX, blockY, blockZ),
+                                new Vector3f(blockX + CUBE_LENGTH, blockY + CUBE_LENGTH, blockZ + CUBE_LENGTH)
+                        );
+                        if (playerBox.intersects(blockBox)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
     }
 }
