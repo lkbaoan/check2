@@ -4,7 +4,7 @@
  * class: CS 4450 - Computer Graphics
  *
  * assignment: final program - checkpoint 1
- * date last modified: 04/29/2024
+ * date last modified: 05/6/2024
  *
  * purpose: This file start the program and launch camera controller
  ***************************************************************** */
@@ -37,7 +37,7 @@ public class Programming {
         try {
             createWindow();
             initGL();
-            camera = new FPCameraController(0, 50, -40);
+            camera = new FPCameraController(0, 0, 0);
             camera.gameLoop();
         } catch (Exception e) {
             e.printStackTrace();
@@ -76,6 +76,9 @@ public class Programming {
         glEnable(GL_TEXTURE_2D);
         glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
+        glEnable(GL_LIGHTING);
+        glEnable(GL_LIGHT0);
+
         glMatrixMode(GL_ONE);
         initLightArrays();
         glEnable(GL_LIGHTING);//enables our lighting
@@ -87,14 +90,13 @@ public class Programming {
         glEnable(GL_LIGHTING);
         glEnable(GL_LIGHT0);
     }
-
     // method: initLightArrays
     // purpose: initalize light arrays
+
     private void initLightArrays() {
         lightPosition = BufferUtils.createFloatBuffer(4);
         lightPosition.put(0.0f).put(0.0f).put(0.0f).put(1.0f).flip();
         whiteLight = BufferUtils.createFloatBuffer(4);
         whiteLight.put(1.0f).put(1.0f).put(1.0f).put(0.0f).flip();
     }
-
 }
