@@ -470,8 +470,8 @@ public class Chunk {
 
     // method: changeTexture
     // purpose: change texture status and rebuild the texture vertex
-    public void changeTexture() {
-        changeTexture = !changeTexture;
+    public void changeTexture(boolean change) {
+        changeTexture = change;
         rebuildTexture();
     }
 

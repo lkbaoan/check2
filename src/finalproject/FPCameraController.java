@@ -20,13 +20,13 @@ import static org.lwjgl.opengl.GL11.*;
 import org.lwjgl.util.vector.Vector3f;
 
 public class FPCameraController {
-
+    
     private Vector3f position;
     private Vector3f lightPosition;
     private float yaw;
     private float pitch;
     private Chunk chunk;
-
+    
     private float playerHeight = 7.01f; // Approximate height of the player
     private float playerWidth = 5.01f; // Width of the player
 
@@ -57,7 +57,7 @@ public class FPCameraController {
             lightPosition.z = 30.0f + 20.0f * (float) Math.sin(angle); // Orbit around the center depth-wise
 
             System.out.println("Light Position: " + lightPosition.x + ", " + lightPosition.y + ", " + lightPosition.z);
-
+            
             if (cycleTimer >= cycleDuration) {
                 cycleTimer = 0.0f; // Reset the cycle
             }
@@ -103,7 +103,7 @@ public class FPCameraController {
         newPos.x += direction.x * distance;
         newPos.y += direction.y * distance;
         newPos.z += direction.z * distance;
-
+        
         if (canMoveTo(newPos)) {
             position.set(newPos);
         }
@@ -153,14 +153,17 @@ public class FPCameraController {
             long currentTime = System.currentTimeMillis();
             float deltaTime = (currentTime - lastTime) / 1000.0f;
             lastTime = currentTime;
-
+            
             processInput();
             updateLightPosition(deltaTime); // Update the light position based on time
             lookThrough();
-
+            
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             if (Keyboard.isKeyDown(Keyboard.KEY_F1)) {
-                chunk.changeTexture();
+                chunk.changeTexture(true);
+            }
+            if (Keyboard.isKeyDown(Keyboard.KEY_F2)) {
+                chunk.changeTexture(false);
             }
             chunk.render();
             Display.update();
@@ -172,14 +175,17 @@ public class FPCameraController {
     // purpose: call for update for yaw and pitch, and call move method based on keydown
     private void processInput() {
         if (Keyboard.isKeyDown(Keyboard.KEY_P)) {
-            dayNightCycleActive = !dayNightCycleActive; // Toggle cycle on/off with 'P' key
+            dayNightCycleActive = true; // Toggle cycle on/off with 'P' key
         }
-
+        if (Keyboard.isKeyDown(Keyboard.KEY_O)) {
+            dayNightCycleActive = false;
+        }
+        
         float mouseDX = Mouse.getDX() * 0.2f;
         float mouseDY = Mouse.getDY() * 0.2f;
         yaw(mouseDX);
         pitch(-mouseDY);
-
+        
         if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
             walkForward(0.35f);
         }
@@ -211,5 +217,5 @@ public class FPCameraController {
         lightPositionBuffer.put(lightPosition.x).put(lightPosition.y).put(lightPosition.z).put(1.0f).flip();
         glLight(GL_LIGHT0, GL_POSITION, lightPositionBuffer);
     }
-
+    
 }
